@@ -135,7 +135,9 @@ int MiFrame::valorFila(int x,bool validacion){//Suma una fila
 	int suma(0);
 	for (int y=0;y<5;y++){
 		if ( validacion){//Emplea el array de validacion
+			
 			if (matrizSuma[x][y] ){//Si esta validada para la suma
+				cout <<"Linea "<<x<< " "<<matrizBotones[x][y]->GetLabel()<<endl;
 				suma+=std::stoi (string (matrizBotones[x][y]->GetLabel()));	
 			}
 		}else{//Sin validacion todos los elementos
@@ -149,7 +151,8 @@ int MiFrame::valorColumna(int y,bool validacion){//Suma una columna
 	int suma(0);
 	for (int x=0;x<5;x++){
 		if ( validacion){//Emplea el array de validacion
-			if (matrizSuma[x][y] ){//Si esta validada para la suma				
+			
+			if (matrizSuma[x][y]){//Si esta validada para la suma				
 				suma+=std::stoi (string (matrizBotones[x][y]->GetLabel()));	
 			}
 		}else{//Sin validacion todos los elementos
@@ -164,13 +167,22 @@ void MiFrame::valorEtiquetas(){//Crea valores de suma para las etiquetas
 	//Emplea los botones y el array de validacion
 	
 	for (int x=0;x<5;x++){//Recorre lineas , crea suma de  linea		
-		EtiquetasLinea [x] =valorFila(x,false);
-		cout <<"Fila "<<x<<" = "<<valorFila(x)<<endl;
+		EtiquetasLinea [x] =valorFila(x,true);
 	}
 	
 	for (int y=0;y<5;y++){//Recorre columnas,crea suma de columna		
-		EtiquetasColumna [y] =valorColumna(y,false);
+		EtiquetasColumna [y] =valorColumna(y,true);
 	}	
+	
+	//Debuf de la matriz suma valores validados
+	for (int x=0;x<5;x++){
+		for (int y=0;y<5;y++){
+			cout <<matrizSuma[x][y]<<",";
+		}
+		cout <<endl;
+	}
+	
+	
 }
 
 //----------------------------------------------------------------------
@@ -178,9 +190,8 @@ void MiFrame::valorEtiquetas(){//Crea valores de suma para las etiquetas
 MiFrame::MiFrame(const wxString& titulo):wxFrame(NULL,wxID_ANY,wxT("5x5 A.Villanueva"))
 {
 	ventana=new wxPanel(this,wxID_ANY);
-	//std::srand(std::time(nullptr)); //usa la hora actual para numeros aleatorios
+	std::srand(std::time(nullptr)); //usa la hora actual para numeros aleatorios
 	
-
 	
 	//CREA BOTONES
       wxPoint posicion(0,0); //wxPoint (const wxRealPoint &pt)
@@ -243,13 +254,6 @@ void MiFrame::OnButton(wxCommandEvent& event)//Botones
 		button->SetBackgroundColour(*wxYELLOW);
 	}
 	
-	
-	for (int x=0;x<5;x++){
-		for (int y=0;y<5;y++){
-			cout <<matrizSuma[x][y]<<",";
-		}
-		cout <<endl;
-	}
 	
 	/*
 	cout <<"Boton = "<<event.GetId()<<endl;
