@@ -133,8 +133,8 @@ int MiFrame::valorFila(int x,bool validacion){//Suma una fila
 			}
 			
 		}else{//Validacion por boton
-			if (matrizBotones[x][y]->GetBackgroundColour()!=*wxRED ){//Si no es rojo suma
-				suma+=std::stoi (string (matrizBotones[x][y]->GetLabel()));
+			if (matrizBotones[y][x]->GetBackgroundColour()!=*wxRED ){//Si no es rojo suma
+				suma+=std::stoi (string (matrizBotones[y][x]->GetLabel()));
 			}
 		}	
 	}
@@ -146,12 +146,12 @@ int MiFrame::valorColumna(int y,bool validacion){//Suma una columna
 	for (int x=0;x<5;x++){
 		if ( validacion){//Emplea el array de validacion
 			
-			if (matrizSuma[x][y]){//Si esta validada para la suma				
-				suma+=std::stoi (string (matrizBotones[x][y]->GetLabel()));	
+			if (matrizSuma[y][x]){//Si esta validada para la suma				
+				suma+=std::stoi (string (matrizBotones[y][x]->GetLabel()));	
 			}
 		}else{//validacion por boton
-			if (matrizBotones[x][y]->GetBackgroundColour()!=*wxRED ){//Si no es rojo suma			
-				suma+=std::stoi (string (matrizBotones[x][y]->GetLabel()));
+			if (matrizBotones[y][x]->GetBackgroundColour()!=*wxRED ){//Si no es rojo suma			
+				suma+=std::stoi (string (matrizBotones[y][x]->GetLabel()));
 			}
 		}	
 	}
@@ -175,7 +175,10 @@ void MiFrame::valorEtiquetas(){//Crea valores de suma para las etiquetas
 			cout <<matrizSuma[x][y]<<" ";
 		}
 		cout <<endl;
-	}	
+	}
+	
+	
+		
 }
 //----------------------------------------------------------------------
 void MiFrame::creaBotones(){//Creacion de botones y la matrizSuma
@@ -183,16 +186,26 @@ void MiFrame::creaBotones(){//Creacion de botones y la matrizSuma
       wxPoint posicion(0,0); //wxPoint (const wxRealPoint &pt)
       wxSize TAMANO(TAM_BOTON,TAM_BOTON); //Tamano de un boton
       //Crea botones
-      for (int x=1;x<=5;x++){
-		for (int y=1 ;y<=5;y++){
+      for (int y=1;y<=5;y++){
+		for (int x=1 ;x<=5;x++){
         posicion= wxPoint(x*TAM_BOTON,y*TAM_BOTON);
         //wxButton* boton1=new wxButton(ventana,BOTON,wxT("x"),posicion,TAMANO);
        //new wxButton( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
 		//new wxButton( ventana,wxID_ANY,(to_string (aleatorio(1,9))),posicion,TAMANO);  
-		matrizBotones[y-1][x-1]=new wxButton( ventana,wxID_ANY,(to_string (aleatorio(1,9))),posicion,TAMANO);  
-		matrizSuma[y-1][x-1]=aleatorio(0,2) ==1 ? true :false;//Crea la casillas validadas
+		matrizBotones[x-1][y-1]=new wxButton( ventana,wxID_ANY,(to_string (aleatorio(1,9))),posicion,TAMANO);  
+		matrizSuma[x-1][y-1]=aleatorio(0,2) ==1 ? true :false;//Crea la casillas validadas
       }
-    }	
+    }
+    
+    //Debug valor botones
+	for (int y=0;y<5;y++){
+		for (int x=0;x<5;x++){
+			cout <<matrizBotones[x][y]->GetLabel ()<<"  ";
+		}
+		cout <<endl;
+	}	
+    
+    	
 }
 //----------------------------------------------------------------------
 void MiFrame::creaEtiquetas(){//Creacion de etiquetas perifericas
@@ -203,22 +216,22 @@ void MiFrame::creaEtiquetas(){//Creacion de etiquetas perifericas
   
   for (int x=1;x<=5;x++){// etiquetas HORIZONTALES X
       posicion= wxPoint(x*TAM_BOTON+offset,TAM_BOTON/2);
-      matrizEtiquetas[0][x-1]=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasLinea[x-1])),posicion,TAMANO);
+      matrizEtiquetas[x-1][0]=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasLinea[x-1])),posicion,TAMANO);
       //etiqueta->SetForegroundColour( wxColor(*wxRED));
         
       posicion= wxPoint(x*TAM_BOTON+offset,TAM_BOTON*6 +TAM_BOTON/4);       
-      matrizEtiquetas[1][x-1]=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasLinea[x-1])),posicion,TAMANO); 
+      matrizEtiquetas[x-1][1]=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasLinea[x-1])),posicion,TAMANO); 
       //etiqueta->SetForegroundColour( wxColor(*wxRED));
     }
 
   for (int y=1;y<=5;y++){//etiquetas VERTICALES Y
 
       posicion= wxPoint(TAM_BOTON/3,y*TAM_BOTON+offset);
-      matrizEtiquetas[2][y-1]=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasColumna [y-1])),posicion,TAMANO);
+      matrizEtiquetas[y-1][2]=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasColumna [y-1])),posicion,TAMANO);
       //etiqueta->SetForegroundColour( wxColor(*wxRED));
       
       posicion= wxPoint(TAM_BOTON*6 +TAM_BOTON/2,y*TAM_BOTON+offset);     
-      matrizEtiquetas[3][y-1]==new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasColumna[y-1])),posicion,TAMANO);
+      matrizEtiquetas[y-1][3]==new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasColumna[y-1])),posicion,TAMANO);
       //etiqueta->SetForegroundColour( wxColor(*wxRED));            
     }	
 }
@@ -250,13 +263,27 @@ void MiFrame::OnButton(wxCommandEvent& event)//Botones
 	//Analisis de sumas en la linea ,fila
 	
 
-	for (int x=0;x<5;x++){
+	for (int x=0;x<5;x++){//Lineas
 		if (valorFila(x,false)==EtiquetasLinea[x] ){
 			cout <<"ok" <<endl;
 			matrizEtiquetas[2][x]->SetForegroundColour( wxColor(*wxRED));
-			matrizEtiquetas[3][x]->SetForegroundColour( wxColor(*wxRED));		
+			//matrizEtiquetas[3][x]->SetForegroundColour( wxColor(*wxRED));		
+
 		}
 	}
+	
+	/*
+	for (int x=0;x<5;x++){//Columnas
+		if (valorColumna(x,false)==EtiquetasColumna[x] ){
+			cout <<"ok" <<endl;
+			matrizEtiquetas[0][x]->SetForegroundColour( wxColor(*wxRED));
+			matrizEtiquetas[1][x]->SetForegroundColour( wxColor(*wxRED));;		
+
+		}
+	}	
+	*/
+	
+	
 	
 	
 	
