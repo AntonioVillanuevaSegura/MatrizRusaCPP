@@ -1,10 +1,23 @@
-//Matriz Rusa en wxWidgets Antonio Villanueva
-//https://www.wxwidgets.org/downloads/
-//https://drive.google.com/open?id=1-w3Vt29wkp3xScl0bCmWbAc2Kl3G6-lR
-//https://wiki.wxwidgets.org/Installing_and_configuring_under_Ubuntu
-//Compilacion
-//g++ -Wall -static-libstdc++ -std=c++11 -Wunused-but-set-variable wx-config --cxxflags -o hola *.cpp wx-config --libs 
+/*Matriz Rusa en wxWidgets Antonio Villanueva
+https://www.wxwidgets.org/downloads/
+https://drive.google.com/open?id=1-w3Vt29wkp3xScl0bCmWbAc2Kl3G6-lR
+https://wiki.wxwidgets.org/Installing_and_configuring_under_Ubuntu
+sudo apt-cache search libwxgt*
+sudo apt-get install wx2.8-headers libwxgtk2.8-0 libwxgtk2.8-dev
+cd /usr/include
+ls | grep wx
+sudo ln -sv wx-2.8/wx wx
+When you compile your files to include the wxWidgets libraries, add this to the end of your gcc command:
+
+'wx-config --cxxflags' 'wx-config --libs'
+ 
+Compilacion
+g++ -std=c++11  -o ejecutable *.cpp `wx-config --libs`
+
+*/
 #include <iostream>
+#include <random> //n aleatorios
+#include <ctime>
 #include "wx/wx.h"
 #include <wx/stattext.h>
 #include <wx/string.h>
@@ -34,6 +47,7 @@ class MiFrame:public wxFrame
   //Constructor de la clase
   MiFrame(const wxString& titulo);
   void OnButton(wxCommandEvent& event);//Manipula los botones
+  int aleatorio (int minimo=1, int maximo=10);//Genera numeros aleatorio
   
   private:
 
@@ -94,56 +108,102 @@ const wxWindowIDRef BOTON = wxWindow::NewControlId();
 //Tabla de eventos para MiFrame DECLARE_EVENT_TABLE() en MiFrame
 
 BEGIN_EVENT_TABLE (  MiFrame,wxFrame)
-  EVT_BUTTON(BOTON, MiFrame::OnButton)//Evento un boton pulsado 
+  //EVT_BUTTON(BOTON, MiFrame::OnButton)//Evento un boton pulsado 
   EVT_BUTTON(wxID_ANY, MiFrame::OnButton)//Evento un boton pulsado   
   
 END_EVENT_TABLE()
-
+//----------------------------------------------------------------------
+int MiFrame::aleatorio(int minimo,int maximo){
+	return  minimo + std::rand()/((RAND_MAX + 1u)/maximo);
+}
+//----------------------------------------------------------------------
 //wxID_ANY le dice a Widgets de generar un identificador por su cuenta
 MiFrame::MiFrame(const wxString& titulo):wxFrame(NULL,wxID_ANY,wxT("5x5 A.Villanueva"))
 {
-ventana=new wxPanel(this,wxID_ANY);
-              
+	ventana=new wxPanel(this,wxID_ANY);
+	//std::srand(std::time(nullptr)); //usa la hora actual para numeros aleatorios
+	
+	wxButton* matrizBotones[5][5];
+	bool matrizSuma[5][5];
+
+	int EtiquetaSuperior [5];//Valores de suma de las etiquetas
+	int EtiquetaInferior [5];
+	
+	//CREA BOTONES
       wxPoint posicion(0,0); //wxPoint (const wxRealPoint &pt)
       wxSize TAMANO(TAM_BOTON,TAM_BOTON); //Tamano de un boton
       //Crea botones
       for (int x=1;x<=5;x++){
-      for (int y=1 ;y<=5;y++){
+		for (int y=1 ;y<=5;y++){
         posicion= wxPoint(x*TAM_BOTON,y*TAM_BOTON);
         //wxButton* boton1=new wxButton(ventana,BOTON,wxT("x"),posicion,TAMANO);
-       new wxButton( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
+       //new wxButton( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
+		//new wxButton( ventana,wxID_ANY,(to_string (aleatorio(1,9))),posicion,TAMANO);  
+		matrizBotones[x-1][y-1]=new wxButton( ventana,wxID_ANY,(to_string (aleatorio(1,9))),posicion,TAMANO);  
+		matrizSuma[x-1][y-1]=
       }
     }
    
-  //Crea etiquetas 
+  //CREA ETIQUETAS 
   
   int offset=25;
   
-  // etiquetas HORIZONTALES X
-  for (int x=1;x<=5;x++){
+  for (int x=1;x<=5;x++){// etiquetas HORIZONTALES X
     int y=0;
       posicion= wxPoint(x*TAM_BOTON+offset,TAM_BOTON/2);
-      new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
+      wxStaticText* etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
+      etiqueta->SetForegroundColour( wxColor(*wxRED));
         
-      posicion= wxPoint(x*TAM_BOTON+offset,TAM_BOTON*6);       
-      new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);            
+      posicion= wxPoint(x*TAM_BOTON+offset,TAM_BOTON*6 +TAM_BOTON/4);       
+      etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO); 
+      etiqueta->SetForegroundColour( wxColor(*wxRED));
     }
 
-  //etiquetas VERTICALES Y
-  for (int y=1;y<=5;y++){
+  for (int y=1;y<=5;y++){//etiquetas VERTICALES Y
     int x=0;
-      posicion= wxPoint(TAM_BOTON/2,y*TAM_BOTON+offset);
-      new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
+      posicion= wxPoint(TAM_BOTON/3,y*TAM_BOTON+offset);
+      wxStaticText* etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
+      etiqueta->SetForegroundColour( wxColor(*wxRED));
       
-      posicion= wxPoint(TAM_BOTON*6,y*TAM_BOTON+offset);     
-      new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);            
+      posicion= wxPoint(TAM_BOTON*6 +TAM_BOTON/2,y*TAM_BOTON+offset);     
+      etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
+      etiqueta->SetForegroundColour( wxColor(*wxRED));            
     }
   
 }    
 
-//Botones
+//Boton
 void MiFrame::OnButton(wxCommandEvent& event)//Botones
 {
-  cout <<"Boton ="<<event.GetId()<<endl;
-  cout <<"Boton ="<<event.GetClientObject( )  <<endl;  
+	wxButton* button = wxDynamicCast(event.GetEventObject(), wxButton);	
+	//cout <<" ETIQUETA = "<< string (button->GetLabel ())<<endl;
+	if (button->GetBackgroundColour()!=*wxRED ){
+		button->SetBackgroundColour(*wxRED);
+	}else{
+		button->SetBackgroundColour(*wxYELLOW);
+	}
+	
+	
+	
+	
+	/*
+	cout <<"Boton = "<<event.GetId()<<endl;
+	cout<<"Evento ="<<event.GetEventObject()<<endl;
+	*/
+	
+	/*
+	wxButton* button = wxDynamicCast(event.GetEventObject(), wxButton);	
+	cout <<" ETIQUETA = "<< string (button->GetLabel ())<<endl;
+
+	//button->SetForegroundColour(*wxRED);//COLOR LETRAS
+	button->SetBackgroundColour(*wxYELLOW);
+
+	wxColour color=button->GetBackgroundColour();
+	
+	if (color==wxColour(255, 255, 0)){
+		cout <<"Red"<<endl;
+	}
+	//button->ClearBackground();
+	*/
 }
+ 
