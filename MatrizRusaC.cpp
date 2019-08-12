@@ -18,6 +18,7 @@ g++ -std=c++11  -o ejecutable *.cpp `wx-config --libs`
 #include <iostream>
 #include <random> //n aleatorios
 #include <ctime>
+#include <string>
 #include "wx/wx.h"
 #include <wx/stattext.h>
 #include <wx/string.h>
@@ -49,12 +50,25 @@ class MiFrame:public wxFrame
   void OnButton(wxCommandEvent& event);//Manipula los botones
   int aleatorio (int minimo=1, int maximo=10);//Genera numeros aleatorio
   
+  int valorFila(int x,bool validacion=true);//Suma una fila 
+  int valorColumna(int y,bool validacion=true);//Suma una columna
+  
+  void valorEtiquetas();//Crea valores de suma para las etiquetas 
+  
   private:
 
-  wxPanel* ventana;
-  
-  wxStaticText* label;
-  wxStaticText* datos;
+	wxPanel* ventana;
+
+	wxStaticText* label;
+	wxStaticText* datos;
+
+	wxButton* matrizBotones[5][5];
+	bool matrizSuma[5][5];
+
+	int EtiquetasColumna [5];//Valores de suma de las etiquetas
+	int EtiquetasLinea [5];  
+	
+
 
   /*Macro para informar a wxWidgets de la gestion de eventos
   *Declara la tabla de eventos en esta clase ,mas abajo
@@ -116,6 +130,49 @@ END_EVENT_TABLE()
 int MiFrame::aleatorio(int minimo,int maximo){
 	return  minimo + std::rand()/((RAND_MAX + 1u)/maximo);
 }
+//----------------------------------------------------------------------  
+int MiFrame::valorFila(int x,bool validacion){//Suma una fila 
+	int suma(0);
+	for (int y=0;y<5;y++){
+		if ( validacion){//Emplea el array de validacion
+			if (matrizSuma[x][y] ){//Si esta validada para la suma
+				suma+=std::stoi (string (matrizBotones[x][y]->GetLabel()));	
+			}
+		}else{//Sin validacion todos los elementos
+			suma+=std::stoi (string (matrizBotones[x][y]->GetLabel()));
+		}	
+	}
+	return suma;
+}
+//----------------------------------------------------------------------  
+int MiFrame::valorColumna(int y,bool validacion){//Suma una columna
+	int suma(0);
+	for (int x=0;x<5;x++){
+		if ( validacion){//Emplea el array de validacion
+			if (matrizSuma[x][y] ){//Si esta validada para la suma				
+				suma+=std::stoi (string (matrizBotones[x][y]->GetLabel()));	
+			}
+		}else{//Sin validacion todos los elementos
+			suma+=std::stoi (string (matrizBotones[x][y]->GetLabel()));
+		}	
+	}
+	return suma;
+}
+//----------------------------------------------------------------------  
+  
+void MiFrame::valorEtiquetas(){//Crea valores de suma para las etiquetas 
+	//Emplea los botones y el array de validacion
+	
+	for (int x=0;x<5;x++){//Recorre lineas , crea suma de  linea		
+		EtiquetasLinea [x] =valorFila(x,false);
+		cout <<"Fila "<<x<<" = "<<valorFila(x)<<endl;
+	}
+	
+	for (int y=0;y<5;y++){//Recorre columnas,crea suma de columna		
+		EtiquetasColumna [y] =valorColumna(y,false);
+	}	
+}
+
 //----------------------------------------------------------------------
 //wxID_ANY le dice a Widgets de generar un identificador por su cuenta
 MiFrame::MiFrame(const wxString& titulo):wxFrame(NULL,wxID_ANY,wxT("5x5 A.Villanueva"))
@@ -123,50 +180,53 @@ MiFrame::MiFrame(const wxString& titulo):wxFrame(NULL,wxID_ANY,wxT("5x5 A.Villan
 	ventana=new wxPanel(this,wxID_ANY);
 	//std::srand(std::time(nullptr)); //usa la hora actual para numeros aleatorios
 	
-	wxButton* matrizBotones[5][5];
-	bool matrizSuma[5][5];
 
-	int EtiquetaSuperior [5];//Valores de suma de las etiquetas
-	int EtiquetaInferior [5];
 	
 	//CREA BOTONES
       wxPoint posicion(0,0); //wxPoint (const wxRealPoint &pt)
       wxSize TAMANO(TAM_BOTON,TAM_BOTON); //Tamano de un boton
       //Crea botones
-      for (int x=1;x<=5;x++){
-		for (int y=1 ;y<=5;y++){
+      for (int y=1;y<=5;y++){
+		for (int x=1 ;x<=5;x++){
         posicion= wxPoint(x*TAM_BOTON,y*TAM_BOTON);
         //wxButton* boton1=new wxButton(ventana,BOTON,wxT("x"),posicion,TAMANO);
        //new wxButton( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
 		//new wxButton( ventana,wxID_ANY,(to_string (aleatorio(1,9))),posicion,TAMANO);  
 		matrizBotones[x-1][y-1]=new wxButton( ventana,wxID_ANY,(to_string (aleatorio(1,9))),posicion,TAMANO);  
-		matrizSuma[x-1][y-1]=
+		matrizSuma[x-1][y-1]=aleatorio(0,2) ==1 ? true :false;//Crea la casillas validadas
       }
     }
    
+
+   valorEtiquetas();//Crea los valores de la suma en las etiquetas perifericas
+   
   //CREA ETIQUETAS 
+  /*
+   *int EtiquetasColumna [5];//Valores de suma de las etiquetas
+	int EtiquetasLinea [5]; 
+   */
   
   int offset=25;
   
   for (int x=1;x<=5;x++){// etiquetas HORIZONTALES X
     int y=0;
       posicion= wxPoint(x*TAM_BOTON+offset,TAM_BOTON/2);
-      wxStaticText* etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
+      wxStaticText* etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasLinea[x-1])),posicion,TAMANO);
       etiqueta->SetForegroundColour( wxColor(*wxRED));
         
       posicion= wxPoint(x*TAM_BOTON+offset,TAM_BOTON*6 +TAM_BOTON/4);       
-      etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO); 
+      etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasLinea[x-1])),posicion,TAMANO); 
       etiqueta->SetForegroundColour( wxColor(*wxRED));
     }
 
   for (int y=1;y<=5;y++){//etiquetas VERTICALES Y
     int x=0;
       posicion= wxPoint(TAM_BOTON/3,y*TAM_BOTON+offset);
-      wxStaticText* etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
+      wxStaticText* etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasColumna [y-1])),posicion,TAMANO);
       etiqueta->SetForegroundColour( wxColor(*wxRED));
       
       posicion= wxPoint(TAM_BOTON*6 +TAM_BOTON/2,y*TAM_BOTON+offset);     
-      etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (x+y)),posicion,TAMANO);
+      etiqueta=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasColumna [y-1])),posicion,TAMANO);
       etiqueta->SetForegroundColour( wxColor(*wxRED));            
     }
   
@@ -184,7 +244,12 @@ void MiFrame::OnButton(wxCommandEvent& event)//Botones
 	}
 	
 	
-	
+	for (int x=0;x<5;x++){
+		for (int y=0;y<5;y++){
+			cout <<matrizSuma[x][y]<<",";
+		}
+		cout <<endl;
+	}
 	
 	/*
 	cout <<"Boton = "<<event.GetId()<<endl;
@@ -206,4 +271,3 @@ void MiFrame::OnButton(wxCommandEvent& event)//Botones
 	//button->ClearBackground();
 	*/
 }
- 
