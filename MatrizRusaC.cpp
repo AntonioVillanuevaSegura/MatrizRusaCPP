@@ -36,39 +36,24 @@ class MiFrame:public wxFrame
   public:
   //Constructor de la clase
   MiFrame(const wxString& titulo);
-  void OnButton(wxCommandEvent& event);//Manipula los botones
-  int aleatorio (int minimo=1, int maximo=10);//Genera numeros aleatorio
-  
-  int valorFila(int x,bool validacion=true);//Suma una fila 
-  int valorColumna(int y,bool validacion=true);//Suma una columna
-  void valorEtiquetas();//Crea valores de suma para las etiquetas
-  void creaBotones();//Creacion de botones 
-  void creaEtiquetas();//Creacion de etiquetas perifericas
   
   private:
+	void OnButton(wxCommandEvent& event);//Manipula los botones
+	int aleatorio (int minimo=1, int maximo=10);//Genera numeros aleatorio
+
+	int valorFila(int x,bool validacion=true);//Suma una fila 
+	int valorColumna(int y,bool validacion=true);//Suma una columna
+	void valorEtiquetas();//Crea valores de suma para las etiquetas
+	void creaBotones();//Creacion de botones 
+	void creaEtiquetas();//Creacion de etiquetas perifericas
 
 	wxPanel* ventana;
-
-	wxStaticText* label;
-	wxStaticText* datos;
-
 	wxButton* matrizBotones[5][5];//Guarda los botones 
-	wxStaticText* matrizEtiquetas[5][4];//Guarda las etiquetas sup,inf,izq,der
-	
+	wxStaticText* matrizEtiquetas[5][4];//Guarda las etiquetas sup,inf,izq,der	
 	bool matrizSuma[5][5];//valores booleanos aceptados en la suma
-
 	int EtiquetasColumna [5];//Suma de valores aceptados en columna
 	int EtiquetasLinea [5]; //Suma de valores aceptadis en Linea 
 	
-
-
-  /*Macro para informar a wxWidgets de la gestion de eventos
-  *Declara la tabla de eventos en esta clase ,mas abajo
-  * la implemento entre BEGIN_ y END_EVENT_TABLE
-  */
-  
-  //Declaracion dinamica eventos no utilizo el macro 
-  //Trabajaremos desde OnInit para eventos dinamicos
   DECLARE_EVENT_TABLE()
 };
 //----------------------------------------------------------------------
@@ -107,16 +92,16 @@ bool MiApp::OnInit()
 }
 
 //----------------------------------------------------------------------
-
-//const wxWindowIDRef BOTON = wxWindow::NewControlId();
-
+//----------------------------------------------------------------------
 //Tabla de eventos para MiFrame DECLARE_EVENT_TABLE() en MiFrame
 
 BEGIN_EVENT_TABLE (  MiFrame,wxFrame)
   EVT_BUTTON(wxID_ANY, MiFrame::OnButton)//Evento un boton pulsado     
 END_EVENT_TABLE()
 //----------------------------------------------------------------------
-int MiFrame::aleatorio(int minimo,int maximo){
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+int MiFrame::aleatorio(int minimo,int maximo){//Una valor aleatorio 
 	return  minimo + std::rand()/((RAND_MAX + 1u)/maximo);
 }
 //----------------------------------------------------------------------  
@@ -211,7 +196,7 @@ void MiFrame::creaEtiquetas(){//Creacion de etiquetas perifericas
 	matrizEtiquetas[x-1][1]=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasLinea[x-1])),posicion,TAMANO); 
     }
 
-  for (int y=1;y<=5;y++){//etiquetas VERTICALES Y ok
+  for (int y=1;y<=5;y++){//etiquetas VERTICALES Y
 
 	posicion= wxPoint(TAM_BOTON/3,y*TAM_BOTON+offset);
 	matrizEtiquetas[y-1][2]=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasColumna [y-1])),posicion,TAMANO);
@@ -234,7 +219,7 @@ MiFrame::MiFrame(const wxString& titulo):wxFrame(NULL,wxID_ANY,wxT("5x5 A.Villan
 	creaEtiquetas();//Crea las etiquetas perifericas con el valor suma
 }    
 
-//Boton
+//Cuando pulsamos un BOTON
 void MiFrame::OnButton(wxCommandEvent& event)//Botones
 {
 	wxButton* button = wxDynamicCast(event.GetEventObject(), wxButton);	
