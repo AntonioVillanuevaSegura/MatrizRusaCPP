@@ -1,8 +1,7 @@
-/*Matriz Rusa en wxWidgets Antonio Villanueva
-instalar wxWidgets 
+/*Matriz Rusa 5x5 en wxWidgets Antonio Villanueva
+instalar wxWidgets  https://wiki.wxwidgets.org/Install
 Compilacion
 g++ -std=c++11  -o ejecutable *.cpp `wx-config --libs`
-
 */
 #include <iostream>
 #include <random> //n aleatorios
@@ -12,9 +11,10 @@ g++ -std=c++11  -o ejecutable *.cpp `wx-config --libs`
 #include <wx/stattext.h>
 #include <wx/string.h>
 #include <wx/sizer.h> //Layouts Sizers
+#include <wx/msgdlg.h> //Popup
 
-#define TAM_PANTALLA 375
-#define TAM_BOTON 50
+#define TAM_PANTALLA 375 //Size de la pantalla
+#define TAM_BOTON 50 //Size de un boton
 
 using namespace std;
 //Declaraciones 
@@ -46,6 +46,8 @@ class MiFrame:public wxFrame
 	void valorEtiquetas();//Crea valores de suma para las etiquetas
 	void creaBotones();//Creacion de botones 
 	void creaEtiquetas();//Creacion de etiquetas perifericas
+	void numeroIntentos();//Ventana con el n° de intentos
+	int intentos;
 
 	wxPanel* ventana;
 	wxButton* matrizBotones[5][5];//Guarda los botones 
@@ -206,6 +208,10 @@ void MiFrame::creaEtiquetas(){//Creacion de etiquetas perifericas
     }	
 }
 
+void MiFrame::numeroIntentos(){//Ventana con el n° de intentos
+		wxMessageBox ( to_string (intentos),wxT("Intentos ") );
+		Close();
+}
 //----------------------------------------------------------------------
 //wxID_ANY le dice a Widgets de generar un identificador por su cuenta
 MiFrame::MiFrame(const wxString& titulo):wxFrame(NULL,wxID_ANY,wxT("5x5 A.Villanueva"))
@@ -222,7 +228,11 @@ MiFrame::MiFrame(const wxString& titulo):wxFrame(NULL,wxID_ANY,wxT("5x5 A.Villan
 //Cuando pulsamos un BOTON
 void MiFrame::OnButton(wxCommandEvent& event)//Botones
 {
+	intentos++;//Un nuevo intento
+	bool fin(true);//Ha llegado al final de la partida ?
+	
 	wxButton* button = wxDynamicCast(event.GetEventObject(), wxButton);	
+	
 	if (button->GetBackgroundColour()!=*wxRED ){
 		button->SetBackgroundColour(*wxRED);
 	}else{
@@ -233,8 +243,8 @@ void MiFrame::OnButton(wxCommandEvent& event)//Botones
 	for (int x=0;x<5;x++){//Columnas
 		if (valorColumna(x,false)==EtiquetasLinea[x] ){
 			
-			matrizEtiquetas[x][0]->SetForegroundColour( wxColor(*wxRED));	
-			matrizEtiquetas[x][1]->SetForegroundColour( wxColor(*wxRED));				
+			matrizEtiquetas[x][0]->SetForegroundColour( wxColor(*wxGREEN));	
+			matrizEtiquetas[x][1]->SetForegroundColour( wxColor(*wxGREEN));				
 		
 		}else{
 			matrizEtiquetas[x][0]->SetForegroundColour( wxColor(*wxBLACK));	
@@ -245,13 +255,22 @@ void MiFrame::OnButton(wxCommandEvent& event)//Botones
 	for (int x=0;x<5;x++){//Lineas
 		if (valorFila(x,false)==EtiquetasColumna[x]){
 			
-			matrizEtiquetas[x][2]->SetForegroundColour( wxColor(*wxRED));	
-			matrizEtiquetas[x][3]->SetForegroundColour( wxColor(*wxRED));					
+			matrizEtiquetas[x][2]->SetForegroundColour( wxColor(*wxGREEN));	
+			matrizEtiquetas[x][3]->SetForegroundColour( wxColor(*wxGREEN));					
 		
 		}else{
 			matrizEtiquetas[x][2]->SetForegroundColour( wxColor(*wxBLACK));	
 			matrizEtiquetas[x][3]->SetForegroundColour( wxColor(*wxBLACK));		
 		}
 	}
+	
+	
+	for (int i=0;i<5;i++){//Se ha resuelto toda la matriz ?
+		if (matrizEtiquetas[i][0]->GetForegroundColour()==*wxBLACK |
+			matrizEtiquetas[i][2]->GetForegroundColour()==*wxBLACK){
+				fin=false;
+			}
+	}
 
+	if (fin ) {numeroIntentos();}
 }
