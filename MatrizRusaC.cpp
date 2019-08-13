@@ -53,7 +53,7 @@ class MiFrame:public wxFrame
 	wxStaticText* datos;
 
 	wxButton* matrizBotones[5][5];//Guarda los botones 
-	wxStaticText* matrizEtiquetas[5][5];//Guarda las etiquetas sup,inf,izq,der
+	wxStaticText* matrizEtiquetas[5][4];//Guarda las etiquetas sup,inf,izq,der
 	
 	bool matrizSuma[5][5];//valores booleanos aceptados en la suma
 
@@ -256,7 +256,8 @@ void MiFrame::creaEtiquetas(){//Creacion de etiquetas perifericas
       //etiqueta->SetForegroundColour( wxColor(*wxRED));
       
       posicion= wxPoint(TAM_BOTON*6 +TAM_BOTON/2,y*TAM_BOTON+offset);     
-      matrizEtiquetas[y-1][3]==new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasColumna[y-1])),posicion,TAMANO);
+      //matrizEtiquetas[y-1][3]==new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasColumna[y-1])),posicion,TAMANO);
+		matrizEtiquetas[y-1][3]=new wxStaticText( ventana,wxID_ANY,(to_string (EtiquetasColumna [y-1])),posicion,TAMANO);      
       //etiqueta->SetForegroundColour( wxColor(*wxRED));            
     }	
 }
@@ -278,76 +279,35 @@ MiFrame::MiFrame(const wxString& titulo):wxFrame(NULL,wxID_ANY,wxT("5x5 A.Villan
 void MiFrame::OnButton(wxCommandEvent& event)//Botones
 {
 	wxButton* button = wxDynamicCast(event.GetEventObject(), wxButton);	
-	//cout <<" ETIQUETA = "<< string (button->GetLabel ())<<endl;
 	if (button->GetBackgroundColour()!=*wxRED ){
 		button->SetBackgroundColour(*wxRED);
 	}else{
 		button->SetBackgroundColour(*wxYELLOW);
 	}
 	
-	//Analisis de sumas en la linea ,fila
-	/*
-	//Debug EtiquetasColumna OK OK FUNCIONA OK
-	cout <<"Etiquetas columna"<<endl;
-	for (int x=0;x<5;x++){
-		cout <<"x "<<x<<" = "<<EtiquetasColumna[x]<<" , ";
+	//Analisis Lineas & Columnas
+	for (int x=0;x<5;x++){//Columnas
+		if (valorColumna(x,false)==EtiquetasLinea[x] ){
+			
+			matrizEtiquetas[x][0]->SetForegroundColour( wxColor(*wxRED));	
+			matrizEtiquetas[x][1]->SetForegroundColour( wxColor(*wxRED));				
 		
-	}	
-	cout <<"Etiquetas linea"<<endl;
-	//Debug EtiquetasLinea
-	for (int x=0;x<5;x++){
-		cout <<"x "<< x<< " =" <<EtiquetasLinea[x]<<" , ";
-		
-	}	
-	cout <<endl;	
-	*/
-	
-	/*
-	//Debug valor Fila cuando hay teclas rojas OK
-	for (int x=0;x<5;x++){
-		cout <<"x="<<x<<"="<<valorFila(x,false)<<endl;
-	}
-	cout <<endl;
-	*/
-	//Debug valor COLUMNA cuando hay teclas rojas OK
-	for (int x=0;x<5;x++){
-		cout <<"y="<<x<<"="<<valorColumna(x,false)<<endl;
-	}
-	cout <<endl;
-
-	
-	
-	//EtiquetasLinea EtiquetasColumna valorFila valorColumna
-	for (int x=0;x<5;x++){//Lineas	
-		if (valorFila(x,false)==EtiquetasColumna[x] ){
-			cout <<"ok" <<endl;
-			//matrizEtiquetas[0][x]->SetForegroundColour( wxColor(*wxRED));	
-			//matrizEtiquetas[1][x]->SetForegroundColour( wxColor(*wxRED));			
+		}else{
+			matrizEtiquetas[x][0]->SetForegroundColour( wxColor(*wxBLACK));	
+			matrizEtiquetas[x][1]->SetForegroundColour( wxColor(*wxBLACK));	
 		}
 	}
-	
-	
-	
-	
-	
-	
-	/*
-	cout <<"Boton = "<<event.GetId()<<endl;
-	cout<<"Evento ="<<event.GetEventObject()<<endl;
-	*/
-	
-	/*
-	wxButton* button = wxDynamicCast(event.GetEventObject(), wxButton);	
-	cout <<" ETIQUETA = "<< string (button->GetLabel ())<<endl;
 
-	//button->SetForegroundColour(*wxRED);//COLOR LETRAS
-	button->SetBackgroundColour(*wxYELLOW);
-
-	wxColour color=button->GetBackgroundColour();
-	
-	if (color==wxColour(255, 255, 0)){
-		cout <<"Red"<<endl;
+	for (int x=0;x<5;x++){//Lineas
+		if (valorFila(x,false)==EtiquetasColumna[x]){
+			
+			matrizEtiquetas[x][2]->SetForegroundColour( wxColor(*wxRED));	
+			matrizEtiquetas[x][3]->SetForegroundColour( wxColor(*wxRED));					
+		
+		}else{
+			matrizEtiquetas[x][2]->SetForegroundColour( wxColor(*wxBLACK));	
+			matrizEtiquetas[x][3]->SetForegroundColour( wxColor(*wxBLACK));		
+		}
 	}
-	//button->ClearBackground();
-	*/
+
 }
