@@ -1,5 +1,5 @@
 # MatrizRusa version wxWidgets C++ 
-Juego en Python3 utilizando tkinter
+Juego en wxWidgets y C++ 
 
 El juego consiste en una matriz de 5x5 de números mostrados al usuario, generados de forma aleatoria,
 todos los números son enteros entre 1 y 9 , el jugador debe ir quitando los números de algunas posiciones
