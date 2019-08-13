@@ -1,4 +1,5 @@
 /*Matriz Rusa 5x5 en wxWidgets Antonio Villanueva
+ video https://youtu.be/lZAH_qdh9qU
 instalar wxWidgets  https://wiki.wxwidgets.org/Install
 Compilacion
 g++ -std=c++11  -o ejecutable *.cpp `wx-config --libs`
